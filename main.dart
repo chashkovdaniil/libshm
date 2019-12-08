@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         '/about':(BuildContext context) => AboutPage(),
         '/subjects':(BuildContext context) => SubjectsPage(),
         '/editShedule':(BuildContext context) => EditShedulePage(),
-        '/homework':(BuildContext context) => HomeworkPage()
+        '/homework':(BuildContext context) => EditHomeworkPage()
       },
       theme: ThemeData(primaryColor: Colors.black)
     );

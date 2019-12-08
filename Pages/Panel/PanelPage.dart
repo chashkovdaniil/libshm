@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class PanelTab extends StatelessWidget {
+class PanelPage extends StatelessWidget {
   final List<Map> list = <Map>[
     {'title': 'Расписание', 'icon': Icon(Icons.list), 'url': '/editShedule'},
     {'title': 'Предметы', 'icon': Icon(Icons.filter_list), 'url': '/subjects'},

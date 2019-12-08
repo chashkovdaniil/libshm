@@ -4,60 +4,25 @@ import 'package:schooldiary/Models/Shedule.dart';
 import 'package:schooldiary/Pages/Homework/HomeworkPageArgs.dart';
 import 'package:schooldiary/loadData.dart';
 
-class ShedulePage extends StatefulWidget {
+class HomeworkPage extends StatefulWidget {
   @override
-  _ShedulePageState createState() => _ShedulePageState();
+  _HomeworkPageState createState() => _HomeworkPageState();
 }
-class _ShedulePageState extends State<ShedulePage> {
+class _HomeworkPageState extends State<HomeworkPage> {
   DateTime _date;
   int _day;
   int _weekday;
-  int _month;
-  int _year;
   @override
   void initState() {
     _date = DateTime.now();
     _day = _date.day;
     _weekday = _date.weekday;
-    _month = _date.month;
-    _year = _date.year;
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
+    List _dayString = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
-    String _dayString = "Понедельник";
-
-    switch (_weekday) {
-      case 1:{
-        _dayString = 'Понедельник';
-      }
-      break;
-      case 2:{
-        _dayString = 'Вторник';
-      }
-      break;
-      case 3:{
-        _dayString = 'Среда';
-      }
-      break;
-      case 4:{
-        _dayString = 'Четверг';
-      }
-      break;
-      case 5:{
-        _dayString = 'Пятница';
-      }
-      break;
-      case 6:{
-        _dayString = 'Суббота';
-      }
-      break;
-      case 7:{
-        _dayString = 'Воскресенье';
-      }
-      break;
-    }
     return Scaffold(
       appBar: AppBar(
         title: Text('Расписание'),
@@ -120,13 +85,11 @@ class _ShedulePageState extends State<ShedulePage> {
                   _date = _date.subtract(Duration(days: 1));
                   _day = _date.day;
                   _weekday = _date.weekday;
-                  _month = _date.month;
-                  _year = _date.year;
                 });
               }),
               SizedBox(width: 10.0),
               Expanded(
-                child: Center(child:Text('$_dayString ($_day)', style: TextStyle(fontSize: 20.0))),
+                child: Center(child:Text('${_dayString[_weekday-1]} ($_day)', style: TextStyle(fontSize: 20.0))),
               ),
               SizedBox(width: 10.0),
               FlatButton(child: Icon(Icons.arrow_forward), onPressed: (){
@@ -134,8 +97,6 @@ class _ShedulePageState extends State<ShedulePage> {
                   _date = _date.add(Duration(days: 1));
                   _day = _date.day;
                   _weekday = _date.weekday;
-                  _month = _date.month;
-                  _year = _date.year;
                 });
               }),
             ],)

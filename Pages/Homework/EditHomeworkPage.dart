@@ -3,12 +3,12 @@ import 'package:schooldiary/Pages/Homework/HomeworkPageArgs.dart';
 import 'package:schooldiary/loadData.dart';
 import 'package:schooldiary/Models/Homework.dart';
 
-class HomeworkPage extends StatefulWidget {
+class EditHomeworkPage extends StatefulWidget {
   @override
-  HomeworkPageState createState() => HomeworkPageState();
+  EditHomeworkPageState createState() => EditHomeworkPageState();
 }
 
-class HomeworkPageState extends State<HomeworkPage> {
+class EditHomeworkPageState extends State<EditHomeworkPage> {
   String content;
   int grade;
   @override

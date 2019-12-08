@@ -13,8 +13,8 @@ class _HomePageState extends State<HomePage> {
   @override 
   Widget build(BuildContext context){
     final tabPages = <Widget>[
-      Center(child: ShedulePage()),
-      Center(child: PanelTab()),
+      Center(child: HomeworkPage()),
+      Center(child: PanelPage()),
     ];
     final bottomNavBarItems = <BottomNavigationBarItem>[
       BottomNavigationBarItem(icon: Icon(Icons.list), title: Text('Домашнее задание')),
