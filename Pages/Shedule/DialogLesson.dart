@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/Models/Subject.dart';
 import 'package:hello_world/Models/Shedule.dart';
-import '../loadData.dart';
+import 'package:hello_world/loadData.dart';
 
 class DialogLesson extends StatefulWidget{
   final int weekday;

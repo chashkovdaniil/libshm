@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/Pages/Panel/PanelPage.dart';
-import '../../Shedule/sheduleTab.dart';
+import 'package:hello_world/Pages/Homework/HomeworkPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
