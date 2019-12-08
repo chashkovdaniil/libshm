@@ -11,7 +11,7 @@ class AboutPage extends StatelessWidget {
           padding: EdgeInsets.all(20.0),
           child: Center(child: Column(
             children: <Widget>[
-              Image.asset("android/app/src/main/res/images/ic_launcher.png"),
+              Image.asset("res/images/ic_launcher.png"),
               SizedBox(height: 20.0),
               Text('SchoolDiary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0)),
               SizedBox(height: 20.0),

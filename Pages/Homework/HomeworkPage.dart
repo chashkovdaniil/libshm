@@ -24,58 +24,153 @@ class _HomeworkPageState extends State<HomeworkPage> {
     List _dayString = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Расписание'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(10.0), 
+        child: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+        )
       ),
       body: Column(
         children: <Widget>[
+          Container(
+            constraints: BoxConstraints.expand(
+              width: double.infinity,
+              height: 80,
+            ),
+            color: Colors.white,
+            child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20,horizontal: 30.0),
+                child: Text('Расписание',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30.0,
+                  ),
+                )
+              )
+            ),
           Expanded(
             flex: 11,
-            child: FutureBuilder<Map<String, dynamic>>(
+            child: Container(color: Colors.white, child: FutureBuilder<Map<String, dynamic>>(
               future: DBProvider.db.getSSH(weekday: _date.weekday, date: int.parse('${_date.day}${_date.month}${_date.year}')),
               builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
                 if (snapshot.hasData && (snapshot.data['shedule'].length > 0)) {
                   List shedule = snapshot.data['shedule'];
                   List subjects = snapshot.data['subjects'];
                   List homeworks = snapshot.data['homeworks'];
+                  
                   return ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
                     itemCount: shedule.length,
                     itemBuilder: (BuildContext context, int index) {
-                      Homework currentHomework;
+                      Homework currentHomework = Homework.fromMap({});
                       Shedule item = shedule[index];
+
                       homeworks.forEach((hm){
                         if (hm.subject == subjects[item.subject-1]['id']) {
                           currentHomework = hm;
                         }
                       });
-                      return ListTile(
-                        leading: CircleAvatar(child: Text('${item.id}')),
-                        title: Text('${subjects[item.subject-1]['title']}'),
-                        subtitle: Text('${currentHomework != null ? currentHomework.content : ""}'),
-                        trailing: CircleAvatar(
-                          child: Text(
-                            '${currentHomework != null ? currentHomework.grade : ""}', 
-                            style: TextStyle(color: Colors.white)
-                          ), 
-                          backgroundColor: Colors.redAccent),
+                      
+                      return InkWell(
                         onTap: () {
                           Navigator.pushNamed(context, '/homework', arguments: HomeworkPageArgs(
                             title: subjects[item.subject-1]['title'], 
-                            content: currentHomework != null ? currentHomework.content : "",
-                            homework: currentHomework != null ? currentHomework : null,
-                            grade: currentHomework != null ? currentHomework.grade : null,
+                            content: currentHomework.content,
+                            homework: currentHomework,
+                            grade: currentHomework.grade,
                             idSubject: subjects[item.subject-1]['id'], 
                             date: int.parse('${_date.day}${_date.month}${_date.year}')
                           ));
                         },
+                        child: Container(
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.deepOrange.withOpacity(0.7)),
+                          margin: EdgeInsets.symmetric(vertical: 10.0),
+                          padding: EdgeInsets.all(20.0),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Text('${item.id}', style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 35.0,
+                                    fontWeight: FontWeight.w900
+                                  )),
+                                )
+                              ),
+                              SizedBox(width: 20.0),
+                              Expanded(
+                                flex: 4,
+                                child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Column(
+                                    children: <Widget>[
+                                      Text('${subjects[item.subject-1]['title']}', style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 35.0,
+                                        fontWeight: FontWeight.w900
+                                      )),
+                                      SizedBox(height: 10.0),
+                                      Text('${currentHomework.content != null ? currentHomework.content : ""}')
+                                    ],
+                                  )
+                                )
+                              ),
+                              SizedBox(width: 20.0),
+                              Expanded(
+                                flex: 1,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Column(
+                                  children: <Widget>[
+                                    Text('Оценка:', style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.w900
+                                    )),
+                                    SizedBox(height: 10.0),
+                                    Text('${currentHomework.grade != null ? currentHomework.grade : "Нет"}')
+                                  ],
+                                )
+                                )
+                              )
+                            ]
+                          )
+                        )
                       );
+                      
+                      
+                      // ListTile(
+                      //   leading: CircleAvatar(child: Text('${item.id}')),
+                      //   title: Text('${subjects[item.subject-1]['title']}'),
+                      //   subtitle: Text('${currentHomework != null ? currentHomework.content : ""}'),
+                      //   trailing: CircleAvatar(
+                      //     child: Text(
+                      //       '${currentHomework.grade != null ? currentHomework.grade : "Нет"}', 
+                      //       style: TextStyle(color: Colors.white)
+                      //     ), 
+                      //     backgroundColor: Colors.redAccent),
+                      //   onTap: () {
+                      //     Navigator.pushNamed(context, '/homework', arguments: HomeworkPageArgs(
+                      //       title: subjects[item.subject-1]['title'], 
+                      //       content: currentHomework != null ? currentHomework.content : "",
+                      //       homework: currentHomework != null ? currentHomework : Homework.fromMap({}),
+                      //       grade: currentHomework != null ? currentHomework.grade : null,
+                      //       idSubject: subjects[item.subject-1]['id'], 
+                      //       date: int.parse('${_date.day}${_date.month}${_date.year}')
+                      //     ));
+                      //   },
+                      // );
                     }
                   );
                 } else {
                   return Center(child: CircularProgressIndicator());
                 }
               },
-            )
+            ))
           ),
           Expanded(
             flex: 1,

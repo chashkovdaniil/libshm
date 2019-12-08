@@ -27,7 +27,7 @@ class DBProvider {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "DB.db");
 
-    await deleteDatabase(path);
+    // await deleteDatabase(path);
 
     return await openDatabase(path, version: 1, onOpen: (db) {}, 
       onCreate: (Database db, int version) async {
@@ -81,7 +81,7 @@ class DBProvider {
     List<Shedule> list =  res.isNotEmpty ? res.map((data) => Shedule.fromMap(data)).toList() : [];
     return {'shedule': list, 'subjects': subjects};
   }
-  
+
   addShedule({int weekday, Shedule shedule}) async {
     final db = await database;
     var raw = db.rawInsert("INSERT Into ${weekdayString[weekday-1]} (subject) VALUES (?)", [shedule.subject]);
@@ -122,21 +122,21 @@ class DBProvider {
     List<Homework> list =  res.isNotEmpty ? res.map((data) => Homework.fromMap(data)).toList() : [];
     return list;
   }
-  homework({Homework homework, int idSubject, String content, int date}) async {
-    final db= await database;
+  homework({Homework homework}) async {
+    final db = await database;
     var raw;
-    List homeworks = await db.query("homeworks", where: 'date = ? AND subject = ?', whereArgs: [date, idSubject]);
 
-    print(homework.toMap());
-    if (homeworks.length == 0) {
-      raw = db.rawInsert(
+    if (homework.id == null) {
+      return raw = db.rawInsert(
         "INSERT Into homeworks (content, subject, date, grade)"
         " VALUES (?, ?, ?, ?)",
-        [homework.content, homework.subject, date, homework.grade]
+        [homework.content, homework.subject, homework.date, homework.grade]
       );
-    } else {
-      raw = await db.update('homeworks', homework.toMap(), where: 'id = ?', whereArgs: [homework.id]);
     }
+
+    // List homeworks = await db.query("homeworks", where: 'id = ?', whereArgs: [homework.id]);
+    raw = await db.update('homeworks', homework.toMap(), where: 'id = ?', whereArgs: [homework.id]);
+
     // print(homework.toMap());
     return raw;
   }
