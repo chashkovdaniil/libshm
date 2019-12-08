@@ -1,4 +1,4 @@
-import '../Models/Homework.dart';
+import 'package:hello_world/Models/Homework.dart';
 
 class HomeworkPageArgs {
   final String title;

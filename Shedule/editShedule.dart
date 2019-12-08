@@ -17,6 +17,7 @@ class _EditShedulePageState extends State<EditShedulePage> with SingleTickerProv
     ShowShedule(4),
     ShowShedule(5),
     ShowShedule(6),
+    ShowShedule(7),
   ];
   static const tabs = <Tab>[
     Tab(text: 'Пн'),
@@ -25,6 +26,7 @@ class _EditShedulePageState extends State<EditShedulePage> with SingleTickerProv
     Tab(text: 'Чт'),
     Tab(text: 'Пт'),
     Tab(text: 'Сб'),
+    Tab(text: 'Вс'),
   ];
   @override
   void initState() {

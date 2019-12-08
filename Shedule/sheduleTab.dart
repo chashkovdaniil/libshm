@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/Models/Homework.dart';
 import 'package:hello_world/Models/Shedule.dart';
-import 'package:hello_world/Pages/HomeworkPageArgs.dart';
+import 'package:hello_world/Pages/Homework/HomeworkPageArgs.dart';
 import '../loadData.dart';
 
 class ShedulePage extends StatefulWidget {
@@ -125,7 +125,9 @@ class _ShedulePageState extends State<ShedulePage> {
                 });
               }),
               SizedBox(width: 10.0),
-              Text('$_dayString, $_day.$_month.$_year', style: TextStyle(fontSize: 20.0),),
+              Expanded(
+                child: Center(child:Text('$_dayString ($_day)', style: TextStyle(fontSize: 20.0))),
+              ),
               SizedBox(width: 10.0),
               FlatButton(child: Icon(Icons.arrow_forward), onPressed: (){
                 setState(() {

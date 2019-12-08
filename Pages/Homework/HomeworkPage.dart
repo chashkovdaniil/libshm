@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hello_world/Pages/HomeworkPageArgs.dart';
+import 'package:hello_world/Pages/Homework/HomeworkPageArgs.dart';
 import 'package:hello_world/loadData.dart';
 import 'package:hello_world/Models/Homework.dart';
 

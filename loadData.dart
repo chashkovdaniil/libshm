@@ -29,6 +29,9 @@ weekdayToString(int weekday){
       case 6: {
         return 'saturday';
       } break;
+      case 7: {
+        return 'sunday';
+      } break;
     }
   return null;
 }
@@ -48,8 +51,8 @@ class DBProvider {
 
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "TestDB.db");
-    // await deleteDatabase(path);
+    String path = join(documentsDirectory.path, "DB.db");
+    await deleteDatabase(path);
     return await openDatabase(path, version: 1, onOpen: (db) {}, 
       onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE monday ("
@@ -68,6 +71,9 @@ class DBProvider {
           "id INTEGER PRIMARY KEY,"
           "subject int)");
       await db.execute("CREATE TABLE saturday ("
+          "id INTEGER PRIMARY KEY,"
+          "subject int)");
+      await db.execute("CREATE TABLE sunday ("
           "id INTEGER PRIMARY KEY,"
           "subject int)");
       await db.execute("CREATE TABLE subjects ("
@@ -149,7 +155,7 @@ class DBProvider {
     if (homeworks.length == 0) {
       raw = db.rawInsert(
         "INSERT Into homeworks (content, subject, date, grade)"
-        " VALUES (?, ?, ?)",
+        " VALUES (?, ?, ?, ?)",
         [homework.content, homework.subject, date, homework.grade]
       );
     } else {
