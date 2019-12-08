@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hello_world/Pages/Homework/HomeworkPageArgs.dart';
-import 'package:hello_world/loadData.dart';
-import 'package:hello_world/Models/Homework.dart';
+import 'package:schooldiary/Pages/Homework/HomeworkPageArgs.dart';
+import 'package:schooldiary/loadData.dart';
+import 'package:schooldiary/Models/Homework.dart';
 
 class HomeworkPage extends StatefulWidget {
   @override

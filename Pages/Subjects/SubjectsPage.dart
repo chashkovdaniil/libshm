@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hello_world/Models/Subject.dart';
-import 'package:hello_world/loadData.dart';
+import 'package:schooldiary/Models/Subject.dart';
+import 'package:schooldiary/loadData.dart';
 
 class SubjectsPage extends StatefulWidget {
   @override

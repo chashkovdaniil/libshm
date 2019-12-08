@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hello_world/Pages/Home/HomePage.dart';
-import 'package:hello_world/Pages/About/AboutPage.dart';
-import 'package:hello_world/Pages/Shedule/EditShedulePage.dart';
-import 'package:hello_world/Pages/Homework/EditHomeworkPage.dart';
-import 'package:hello_world/Pages/Subjects/SubjectsPage.dart';
+import 'package:schooldiary/Pages/Home/HomePage.dart';
+import 'package:schooldiary/Pages/About/AboutPage.dart';
+import 'package:schooldiary/Pages/Shedule/EditShedulePage.dart';
+import 'package:schooldiary/Pages/Homework/EditHomeworkPage.dart';
+import 'package:schooldiary/Pages/Subjects/SubjectsPage.dart';
 
 bool auth = true;
 

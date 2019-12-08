@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hello_world/Models/Homework.dart';
-import 'package:hello_world/Models/Shedule.dart';
-import 'package:hello_world/Pages/Homework/HomeworkPageArgs.dart';
-import 'package:hello_world/loadData.dart';
+import 'package:schooldiary/Models/Homework.dart';
+import 'package:schooldiary/Models/Shedule.dart';
+import 'package:schooldiary/Pages/Homework/HomeworkPageArgs.dart';
+import 'package:schooldiary/loadData.dart';
 
 class ShedulePage extends StatefulWidget {
   @override

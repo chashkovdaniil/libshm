@@ -9,39 +9,13 @@ import './Models/Subject.dart';
 import './Models/Homework.dart';
 import './Models/Shedule.dart';
 
-weekdayToString(int weekday){
-  switch (weekday) {
-      case 1: {
-        return 'monday';
-      }break;
-      case 2: {
-        return 'tuesday';
-      } break;
-      case 3: {
-        return 'wednessday';
-        } break;
-      case 4: {
-        return 'thursday';
-      } break;
-      case 5: {
-        return 'friday';
-      } break;
-      case 6: {
-        return 'saturday';
-      } break;
-      case 7: {
-        return 'sunday';
-      } break;
-    }
-  return null;
-}
-    
+List weekdayString = ['monday', 'tuesday', 'wednessday', 'thursday', 'friday', 'saturday', 'sunday'];
+
 class DBProvider {
-  DBProvider._();
-
   static final DBProvider db = DBProvider._();
-
   Database _database;
+  
+  DBProvider._();
 
   Future<Database> get database async {
     if (_database != null) return _database;
@@ -52,78 +26,80 @@ class DBProvider {
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "DB.db");
+
     await deleteDatabase(path);
+
     return await openDatabase(path, version: 1, onOpen: (db) {}, 
       onCreate: (Database db, int version) async {
-      await db.execute("CREATE TABLE monday ("
-          "id INTEGER PRIMARY KEY,"
-          "subject int)");
-      await db.execute("CREATE TABLE tuesday ("
-          "id INTEGER PRIMARY KEY,"
-          "subject int)");
-      await db.execute("CREATE TABLE wednessday ("
-          "id INTEGER PRIMARY KEY,"
-          "subject int)");
-      await db.execute("CREATE TABLE thursday ("
-          "id INTEGER PRIMARY KEY,"
-          "subject int)");
-      await db.execute("CREATE TABLE friday ("
-          "id INTEGER PRIMARY KEY,"
-          "subject int)");
-      await db.execute("CREATE TABLE saturday ("
-          "id INTEGER PRIMARY KEY,"
-          "subject int)");
-      await db.execute("CREATE TABLE sunday ("
-          "id INTEGER PRIMARY KEY,"
-          "subject int)");
-      await db.execute("CREATE TABLE subjects ("
-          "id INTEGER PRIMARY KEY,"
-          "title TEXT,"
-          "teacher TEXT)");
-      await db.execute("CREATE TABLE homeworks ("
-          "id INTEGER PRIMARY KEY,"
-          "date int,"
-          "subject int,"
-          "content TEXT,"
-          "files TEXT,"
-          "grade int,"
-          "isDone int)");
+        await db.execute("CREATE TABLE monday ("
+            "id INTEGER PRIMARY KEY,"
+            "subject int)");
+        await db.execute("CREATE TABLE tuesday ("
+            "id INTEGER PRIMARY KEY,"
+            "subject int)");
+        await db.execute("CREATE TABLE wednessday ("
+            "id INTEGER PRIMARY KEY,"
+            "subject int)");
+        await db.execute("CREATE TABLE thursday ("
+            "id INTEGER PRIMARY KEY,"
+            "subject int)");
+        await db.execute("CREATE TABLE friday ("
+            "id INTEGER PRIMARY KEY,"
+            "subject int)");
+        await db.execute("CREATE TABLE saturday ("
+            "id INTEGER PRIMARY KEY,"
+            "subject int)");
+        await db.execute("CREATE TABLE sunday ("
+            "id INTEGER PRIMARY KEY,"
+            "subject int)");
+        await db.execute("CREATE TABLE subjects ("
+            "id INTEGER PRIMARY KEY,"
+            "title TEXT,"
+            "teacher TEXT)");
+        await db.execute("CREATE TABLE homeworks ("
+            "id INTEGER PRIMARY KEY,"
+            "date int,"
+            "subject int,"
+            "content TEXT,"
+            "files TEXT,"
+            "grade int,"
+            "isDone int)");
     });
   }
   // Shedule
   Future<List<Shedule>> getShedule(int weekday) async {
-    // String weekdayString = weekdayToString(weekday);
     final db = await database;
-    var res = await db.query(weekdayToString(weekday));
+    var res = await db.query(weekdayString[weekday-1]);
     List<Shedule> list =  res.isNotEmpty ? res.map((data) => Shedule.fromMap(data)).toList() : [];
     return list;
   }
+
   Future<Map<String, dynamic>> getSheduleAndSubjects(int weekday) async {
-    // String weekdayString = weekdayToString(weekday);
     final db = await database;
-    var res = await db.query(weekdayToString(weekday));
+    var res = await db.query(weekdayString[weekday-1]);
     var subjects = await db.query("subjects");
     List<Shedule> list =  res.isNotEmpty ? res.map((data) => Shedule.fromMap(data)).toList() : [];
     return {'shedule': list, 'subjects': subjects};
   }
+  
   addShedule({int weekday, Shedule shedule}) async {
     final db = await database;
-    var raw = db.rawInsert("INSERT Into ${weekdayToString(weekday)} (subject) VALUES (?)", [shedule.subject]);
+    var raw = db.rawInsert("INSERT Into ${weekdayString[weekday-1]} (subject) VALUES (?)", [shedule.subject]);
     return raw;
   }
   updateShedule({int weekday, Shedule shedule}) async {
     final db = await database;
-    var raw = await db.update(weekdayToString(weekday), shedule.toMap(), where: 'id = ?', whereArgs: [shedule.id]);
+    var raw = await db.update(weekdayString[weekday-1], shedule.toMap(), where: 'id = ?', whereArgs: [shedule.id]);
     return raw;
   }
   deleteShedule({int id, int weekday}) async {
     final db = await database;
-    var raw = db.delete(weekdayToString(weekday), where: "id = ?", whereArgs: [id]);
+    var raw = db.delete(weekdayString[weekday-1], where: "id = ?", whereArgs: [id]);
     return raw;
   }
   Future<List<Shedule>> getMaxId({int weekday}) async {
     final db = await database;
-    var res = await db.rawQuery('SELECT * FROM ${weekdayToString(weekday)} ORDER BY id DESC LIMIT 1');
+    var res = await db.rawQuery('SELECT * FROM ${weekdayString[weekday-1]} ORDER BY id DESC LIMIT 1');
     List<Shedule> list =  res.isNotEmpty ? res.map((data) => Shedule.fromMap(data)).toList() : [];
     return list;
   }

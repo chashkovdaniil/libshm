@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:hello_world/Models/Shedule.dart';
+import 'package:schooldiary/Models/Shedule.dart';
 
 class SheduleModel extends ChangeNotifier {
   final List<Shedule> _lessons = [];
