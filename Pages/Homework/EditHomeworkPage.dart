@@ -18,36 +18,34 @@ class HomeworkPageState extends State<HomeworkPage> {
       appBar: AppBar(
         title: Text(args.title),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-                children: <Widget>[
-                  TextFormField(
-                    onChanged: (value){
-                      setState(() {
-                        grade = int.parse(value);
-                      });
-                    },
-                    initialValue: '${args.grade}',
-                  ),
-                  TextFormField(  
-                    onChanged: (value){
-                      setState(() {
-                        content = value;
-                      });
-                    },
-                    maxLines: 20,
-                    initialValue: args.content,
-                    decoration: InputDecoration(
-                      hintText: "Что задали?",
-                    ),
-                    style: TextStyle(fontSize: 20.0),
-                  )
-                ],
+      body: Form(
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              onChanged: (value){
+                setState(() {
+                  grade = int.parse(value);
+                });
+              },
+              initialValue: '${args.grade == null ? "" : args.grade}',
+            ),
+            Expanded(
+              child: TextFormField(  
+                onChanged: (value){
+                  setState(() {
+                    content = value;
+                  });
+                },
+                maxLines: 20,
+                initialValue: args.content,
+                decoration: InputDecoration(
+                  hintText: "Что задали?",
+                ),
+                style: TextStyle(fontSize: 20.0),
               )
           )
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.done),

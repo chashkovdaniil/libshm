@@ -31,7 +31,11 @@ class _EditShedulePageState extends State<EditShedulePage> with SingleTickerProv
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: tabPages.length, vsync: this);
+    _tabController = TabController(
+      initialIndex: DateTime.now().weekday-1,
+      length: tabPages.length, 
+      vsync: this
+    );
   }
   @override
   void dispose() {
