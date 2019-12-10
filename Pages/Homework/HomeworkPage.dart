@@ -41,12 +41,28 @@ class _HomeworkPageState extends State<HomeworkPage> {
             color: Colors.white,
             child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 20,horizontal: 30.0),
-                child: Text('Расписание',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30.0,
-                  ),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 11,
+                      child: Text('расписание',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30.0,
+                        )
+                      )
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: IconButton(
+                        icon: Icon(Icons.settings),
+                        onPressed: (){
+                          Navigator.pushNamed(context, '/settings');
+                        },
+                      )
+                    )
+                  ],
                 )
               )
             ),
@@ -81,7 +97,8 @@ class _HomeworkPageState extends State<HomeworkPage> {
                             homework: currentHomework,
                             grade: currentHomework.grade,
                             idSubject: subjects[item.subject-1]['id'], 
-                            date: int.parse('${_date.day}${_date.month}${_date.year}')
+                            date: int.parse('${_date.day}${_date.month}${_date.year}'),
+                            isDone: currentHomework.isDone
                           ));
                         },
                         child: Container(
@@ -103,7 +120,7 @@ class _HomeworkPageState extends State<HomeworkPage> {
                               ),
                               SizedBox(width: 20.0),
                               Expanded(
-                                flex: 4,
+                                flex: 5,
                                 child: Align(
                                   alignment: Alignment.topLeft,
                                   child: Column(
@@ -126,44 +143,42 @@ class _HomeworkPageState extends State<HomeworkPage> {
                                   alignment: Alignment.topCenter,
                                   child: Column(
                                   children: <Widget>[
-                                    Text('Оценка:', style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.w900
-                                    )),
-                                    SizedBox(height: 10.0),
-                                    Text('${currentHomework.grade != null ? currentHomework.grade : "Нет"}')
+                                    // Text('Оценка:', style: TextStyle(
+                                    //   color: Colors.white,
+                                    //   fontSize: 15.0,
+                                    //   fontWeight: FontWeight.w900
+                                    // )),
+                                    // SizedBox(height: 10.0),
+                                    Text('${currentHomework.grade != null ? currentHomework.grade : ""}', style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 30.0,
+                                        fontWeight: FontWeight.w900
+                                      ))
                                   ],
                                 )
+                                )
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Checkbox(
+                                    activeColor: Colors.white,
+                                    checkColor: Colors.black,
+                                    value: currentHomework.isDone,
+                                    onChanged: (val){
+                                      setState(() {
+                                        currentHomework.isDone = val;
+                                        DBProvider.db.homework(homework: currentHomework);
+                                      });
+                                    },
+                                  )
                                 )
                               )
                             ]
                           )
                         )
                       );
-                      
-                      
-                      // ListTile(
-                      //   leading: CircleAvatar(child: Text('${item.id}')),
-                      //   title: Text('${subjects[item.subject-1]['title']}'),
-                      //   subtitle: Text('${currentHomework != null ? currentHomework.content : ""}'),
-                      //   trailing: CircleAvatar(
-                      //     child: Text(
-                      //       '${currentHomework.grade != null ? currentHomework.grade : "Нет"}', 
-                      //       style: TextStyle(color: Colors.white)
-                      //     ), 
-                      //     backgroundColor: Colors.redAccent),
-                      //   onTap: () {
-                      //     Navigator.pushNamed(context, '/homework', arguments: HomeworkPageArgs(
-                      //       title: subjects[item.subject-1]['title'], 
-                      //       content: currentHomework != null ? currentHomework.content : "",
-                      //       homework: currentHomework != null ? currentHomework : Homework.fromMap({}),
-                      //       grade: currentHomework != null ? currentHomework.grade : null,
-                      //       idSubject: subjects[item.subject-1]['id'], 
-                      //       date: int.parse('${_date.day}${_date.month}${_date.year}')
-                      //     ));
-                      //   },
-                      // );
                     }
                   );
                 } else {
@@ -174,27 +189,37 @@ class _HomeworkPageState extends State<HomeworkPage> {
           ),
           Expanded(
             flex: 1,
-            child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[
-              FlatButton(child: Icon(Icons.arrow_back), onPressed: (){
-                setState(() {
-                  _date = _date.subtract(Duration(days: 1));
-                  _day = _date.day;
-                  _weekday = _date.weekday;
-                });
-              }),
-              SizedBox(width: 10.0),
-              Expanded(
-                child: Center(child:Text('${_dayString[_weekday-1]} ($_day)', style: TextStyle(fontSize: 20.0))),
-              ),
-              SizedBox(width: 10.0),
-              FlatButton(child: Icon(Icons.arrow_forward), onPressed: (){
-                setState(() {
-                  _date = _date.add(Duration(days: 1));
-                  _day = _date.day;
-                  _weekday = _date.weekday;
-                });
-              }),
-            ],)
+            child: Container(
+              color: Colors.white,
+              child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[
+                Expanded(
+                  flex: 2,
+                  child: FlatButton(child: Icon(Icons.arrow_back), onPressed: (){
+                    setState(() {
+                      _date = _date.subtract(Duration(days: 1));
+                      _day = _date.day;
+                      _weekday = _date.weekday;
+                    });
+                  }),
+                ),
+                SizedBox(width: 10.0),
+                Expanded(
+                  flex: 5,
+                  child: Center(child:Text('${_dayString[_weekday-1]} ($_day)', style: TextStyle(fontSize: 20.0))),
+                ),
+                SizedBox(width: 10.0),
+                Expanded(
+                  flex: 2,
+                  child: FlatButton(child: Icon(Icons.arrow_forward), onPressed: (){
+                    setState(() {
+                      _date = _date.add(Duration(days: 1));
+                      _day = _date.day;
+                      _weekday = _date.weekday;
+                    });
+                  })
+                )
+              ],)
+            )
           )
         ],
       )

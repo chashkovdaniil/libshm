@@ -27,7 +27,7 @@ class DBProvider {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "DB.db");
 
-    // await deleteDatabase(path);
+    await deleteDatabase(path);
 
     return await openDatabase(path, version: 1, onOpen: (db) {}, 
       onCreate: (Database db, int version) async {
@@ -63,7 +63,7 @@ class DBProvider {
             "content TEXT,"
             "files TEXT,"
             "grade int,"
-            "isDone int)");
+            "isDone int DEFAULT 0)");
     });
   }
   // Shedule
@@ -128,9 +128,9 @@ class DBProvider {
 
     if (homework.id == null) {
       return raw = db.rawInsert(
-        "INSERT Into homeworks (content, subject, date, grade)"
-        " VALUES (?, ?, ?, ?)",
-        [homework.content, homework.subject, homework.date, homework.grade]
+        "INSERT Into homeworks (content, subject, date, grade, isDone)"
+        " VALUES (?, ?, ?, ?, ?)",
+        [homework.content, homework.subject, homework.date, homework.grade, homework.isDone]
       );
     }
 

@@ -4,6 +4,7 @@ import 'package:schooldiary/Pages/About/AboutPage.dart';
 import 'package:schooldiary/Pages/Shedule/EditShedulePage.dart';
 import 'package:schooldiary/Pages/Homework/EditHomeworkPage.dart';
 import 'package:schooldiary/Pages/Subjects/SubjectsPage.dart';
+import 'package:schooldiary/Pages/Settings/SettingsPage.dart';
 
 bool auth = true;
 
@@ -21,9 +22,10 @@ class MyApp extends StatelessWidget {
         '/about':(BuildContext context) => AboutPage(),
         '/subjects':(BuildContext context) => SubjectsPage(),
         '/editShedule':(BuildContext context) => EditShedulePage(),
-        '/homework':(BuildContext context) => EditHomeworkPage()
+        '/homework':(BuildContext context) => EditHomeworkPage(),
+        '/settings':(BuildContext context) => SettingsPage()
       },
-      theme: ThemeData(primaryColor: Colors.black)
+      theme: ThemeData(primaryColor: Colors.white)
     );
   }
 }

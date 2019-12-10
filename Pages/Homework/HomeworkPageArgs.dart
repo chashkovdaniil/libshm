@@ -7,6 +7,7 @@ class HomeworkPageArgs {
   final int date;
   final int grade;
   final Homework homework;
+  final bool isDone;
 
-  HomeworkPageArgs({this.title, this.content, this.homework, this.idSubject, this.date, this.grade});
+  HomeworkPageArgs({this.title, this.content, this.homework, this.idSubject, this.date, this.grade, this.isDone});
 }
