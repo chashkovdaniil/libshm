@@ -6,10 +6,13 @@ class AboutPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('О приложении'),
+        elevation: 0.0,
       ),
-      body: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Center(child: Column(
+      body: Container(
+        color: Colors.white,
+        padding: EdgeInsets.all(20.0),
+        child: Center(
+          child: Column(
             children: <Widget>[
               Image.asset("res/images/ic_launcher.png"),
               SizedBox(height: 20.0),

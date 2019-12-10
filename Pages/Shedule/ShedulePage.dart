@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './showShedule.dart';
+import 'package:schooldiary/Pages/Shedule/SheduleDayPage.dart';
 
 class EditShedulePage extends StatefulWidget { 
   @override
@@ -45,13 +45,16 @@ class _EditShedulePageState extends State<EditShedulePage> with SingleTickerProv
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      appBar: AppBar(title: Text('Расписание')),
+      appBar: AppBar(
+        title: Text('Расписание'),
+        elevation: 0.0,
+      ),
       body: TabBarView(
         children: tabPages,
         controller: _tabController,
       ),
       bottomNavigationBar: Material(
-        color: Colors.black,
+        color: Colors.white,
         child: TabBar(
           tabs: tabs,
           controller: _tabController,

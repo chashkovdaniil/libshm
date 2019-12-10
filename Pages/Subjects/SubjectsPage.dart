@@ -16,93 +16,99 @@ class _SubjectsPageState extends State<SubjectsPage> {
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      appBar: AppBar(title: Text('Список предметов')),
-      body: FutureBuilder<List<Subject>>(
-        future: DBProvider.db.getSubjects(),
-        builder: (BuildContext context, AsyncSnapshot<List<Subject>> snapshot){
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index){
-                Subject item = snapshot.data[index];
+      appBar: AppBar(
+        title: Text('Список предметов'),
+        elevation: 0.0,
+      ),
+      body: Container(
+        color: Colors.white,
+        child: FutureBuilder<List<Subject>>(
+          future: DBProvider.db.getSubjects(),
+          builder: (BuildContext context, AsyncSnapshot<List<Subject>> snapshot){
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index){
+                  Subject item = snapshot.data[index];
 
-                String changedTitle = item.title;
-                String changedTeacher = item.teacher;
+                  String changedTitle = item.title;
+                  String changedTeacher = item.teacher;
 
-                print(item.title);
-                print(item.teacher);
-                return Dismissible(
-                  key: UniqueKey(),
-                  background: Container(color: Colors.red),
-                  onDismissed: (direction) {
-                    DBProvider.db.deleteSubject(item.id);
-                  },
-                  child: ListTile(
-                    title: Text(item.title),
-                    subtitle: Text(item.teacher),
-                    onTap: (){
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => SimpleDialog(
-                          title: Text('Редактирование'),
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Form(
-                                key: _editFormKey,
-                                child: Column(
-                                  children: <Widget>[
-                                    TextFormField(
-                                      decoration: InputDecoration(
-                                        hintText: 'Название'
+                  print(item.title);
+                  print(item.teacher);
+                  return Dismissible(
+                    key: UniqueKey(),
+                    background: Container(color: Colors.red),
+                    onDismissed: (direction) {
+                      DBProvider.db.deleteSubject(item.id);
+                    },
+                    child: ListTile(
+                      title: Text(item.title),
+                      subtitle: Text(item.teacher),
+                      onTap: (){
+                        showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => SimpleDialog(
+                            title: Text('Редактирование'),
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                child: Form(
+                                  key: _editFormKey,
+                                  child: Column(
+                                    children: <Widget>[
+                                      TextFormField(
+                                        decoration: InputDecoration(
+                                          hintText: 'Название'
+                                        ),
+                                        onChanged: (val){
+                                          changedTitle = val;
+                                        },
+                                        validator: (value) => value.isEmpty ? 'Заполните поле!' : null,
+                                        initialValue: item.title,
                                       ),
-                                      onChanged: (val){
-                                        changedTitle = val;
-                                      },
-                                      validator: (value) => value.isEmpty ? 'Заполните поле!' : null,
-                                      initialValue: item.title,
-                                    ),
-                                    TextFormField(
-                                      decoration: InputDecoration(
-                                        hintText: 'ФИО учителя'
+                                      TextFormField(
+                                        decoration: InputDecoration(
+                                          hintText: 'ФИО учителя'
+                                        ),
+                                        onChanged: (val){
+                                          changedTeacher = val;
+                                        },
+                                        initialValue: item.teacher,
                                       ),
-                                      onChanged: (val){
-                                        changedTeacher = val;
-                                      },
-                                      initialValue: item.teacher,
-                                    ),
-                                    FlatButton(child: Text("OK"), onPressed: (){
-                                      if (_editFormKey.currentState.validate()) {
-                                        Navigator.pop(context, 'OK');
-                                      }
-                                    })
-                                  ],
+                                      FlatButton(child: Text("OK"), onPressed: (){
+                                        if (_editFormKey.currentState.validate()) {
+                                          Navigator.pop(context, 'OK');
+                                        }
+                                      })
+                                    ],
+                                  )
                                 )
                               )
-                            )
-                          ],
-                        )
-                      ).then((value){
-                        if (changedTitle.isEmpty) {  
-                          Fluttertoast.showToast(msg: 'Укажите название!');
-                        } else {
-                          Fluttertoast.showToast(msg: 'Сохранено!');
-                          Subject subject = Subject(id: item.id, title: changedTitle, teacher: changedTeacher);
-                          DBProvider.db.updateSubject(subject);
-                        }
-                      });
-                    }
-                  ),
-                );
-              },
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator()
-            );
+                            ],
+                          )
+                        ).then((value){
+                          if (changedTitle.isEmpty) {  
+                            Fluttertoast.showToast(msg: 'Укажите название!');
+                          } else {
+                            Fluttertoast.showToast(msg: 'Сохранено!');
+                            Subject subject = Subject(id: item.id, title: changedTitle, teacher: changedTeacher);
+                            DBProvider.db.updateSubject(subject);
+                          }
+                        });
+                      }
+                    ),
+                  );
+                },
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator()
+              );
+            }
+            
           }
-          
-        },
+        )
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),

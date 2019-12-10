@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:schooldiary/Pages/Home/HomePage.dart';
 import 'package:schooldiary/Pages/About/AboutPage.dart';
-import 'package:schooldiary/Pages/Shedule/EditShedulePage.dart';
+import 'package:schooldiary/Pages/Shedule/ShedulePage.dart';
 import 'package:schooldiary/Pages/Homework/EditHomeworkPage.dart';
 import 'package:schooldiary/Pages/Subjects/SubjectsPage.dart';
 import 'package:schooldiary/Pages/Settings/SettingsPage.dart';
