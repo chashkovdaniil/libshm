@@ -43,8 +43,15 @@ class _DialogLessonState extends State<DialogLesson>{
               future: _subjects,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  if (widget.subject != null){
+                    for (var i = 0; i < snapshot.data.length; i++){
+                      if(snapshot.data[i].id == widget.subject.id){
+                        selectedSubject = snapshot.data[i];
+                      }
+                    }
+                  }
                   return DropdownButton<Subject>(
-                    value: (selectedSubject == null && widget.subject != null) ? snapshot.data[widget.subject.id-1] : selectedSubject,
+                    value: selectedSubject,
                     items: snapshot.data.map((value) {
                       return  DropdownMenuItem<Subject>(
                         value: value,

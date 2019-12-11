@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:schooldiary/Pages/Home/HomePage.dart';
 import 'package:schooldiary/Pages/About/AboutPage.dart';
+import 'package:schooldiary/Pages/NotDone/NotDonePage.dart';
 import 'package:schooldiary/Pages/Shedule/ShedulePage.dart';
 import 'package:schooldiary/Pages/Homework/EditHomeworkPage.dart';
 import 'package:schooldiary/Pages/Subjects/SubjectsPage.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         '/subjects':(BuildContext context) => SubjectsPage(),
         '/editShedule':(BuildContext context) => EditShedulePage(),
         '/homework':(BuildContext context) => EditHomeworkPage(),
+        '/notdone':(BuildContext context) => NotDonePage(),
         '/settings':(BuildContext context) => SettingsPage()
       },
       theme: ThemeData(primaryColor: Colors.white)

@@ -17,44 +17,74 @@ class _ShowSheduleState extends State<ShowShedule> {
     return Scaffold(
       body: Container(
         color: Colors.white,
-        child: FutureBuilder<Map<String, dynamic>>(
-          future: DBProvider.db.getSheduleAndSubjects(widget._weekday),
-          builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
-            if (snapshot.hasData && (snapshot.data['shedule'].length > 0)) {
-              List shedule = snapshot.data['shedule'];
-              List _subjects = snapshot.data['subjects'];
+        child: FutureBuilder<List<Shedule>>(
+          future: DBProvider.db.getShedule(widget._weekday),
+          builder: (BuildContext context, AsyncSnapshot<List<Shedule>> snapshot) {
+            if (snapshot.hasData && (snapshot.data.length > 0)) {
+              List shedule = snapshot.data;
               return ListView.builder(
                 itemCount: shedule.length,
                 itemBuilder: (BuildContext context, int index) {
                   Shedule item = shedule[index];
-                  return Dismissible(
-                    key: UniqueKey(),
-                    background: Container(color: Colors.red),
-                    onDismissed: (direction) {
-                      DBProvider.db.deleteShedule(id: item.id, weekday: widget._weekday);
-                      setState(() {});
-                    },
-                    child: ListTile(
-                      leading: CircleAvatar(child: Text('${item.id}')),
-                      title: Text("${_subjects[item.subject-1]['title']}"),
-                      onTap: (){
-                        DialogLesson _editLesson = DialogLesson(
-                          title: 'Редактировать',
-                          buttonTitle: 'Сохранить',
-                          id: item.id, 
-                          weekday: widget._weekday, 
-                          subject: Subject.fromMap(_subjects[item.subject-1]), 
-                          query: DBProvider.db.updateShedule,
+                  return FutureBuilder<List<Subject>>(
+                    future: DBProvider.db.getSubject(item.subject),
+                    builder: (BuildContext context, AsyncSnapshot<List<Subject>> snapshotSubject){
+                      if(snapshotSubject.hasData){
+                        Subject subject = snapshotSubject.data[0];
+                        return ListTile(
+                          title: Text("${subject == null ? "" : subject.title}", style: TextStyle(fontSize: 20.0),),
+                          onTap: (){
+                            DialogLesson _editLesson = DialogLesson(
+                              title: 'Редактировать',
+                              buttonTitle: 'Сохранить',
+                              id: item.id, 
+                              weekday: widget._weekday, 
+                              subject: subject, 
+                              query: DBProvider.db.updateShedule,
+                            );
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => _editLesson
+                            ).then((val){
+                              setState(() {});
+                            });
+                          },
                         );
-                        showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => _editLesson
-                        ).then((val){
-                          setState(() {});
-                        });
-                      },
-                    )
+                      }else{
+                        return CircularProgressIndicator();
+                      }
+                      
+                    },
                   );
+                  // return Dismissible(
+                  //   key: UniqueKey(),
+                  //   background: Container(color: Colors.red),
+                  //   onDismissed: (direction) async {
+                  //     var raw = await DBProvider.db.deleteShedule(id: item.id, weekday: widget._weekday);
+                  //     if (raw['done'] == 1){
+                  //       setState(() {});
+                  //     }
+                  //   },
+                  //   child: ListTile(
+                  //     title: Text("${_subjects[item.subject-1]['title']}", style: TextStyle(fontSize: 20.0),),
+                  //     onTap: (){
+                  //       DialogLesson _editLesson = DialogLesson(
+                  //         title: 'Редактировать',
+                  //         buttonTitle: 'Сохранить',
+                  //         id: item.id, 
+                  //         weekday: widget._weekday, 
+                  //         subject: Subject.fromMap(_subjects[item.subject-1]), 
+                  //         query: DBProvider.db.updateShedule,
+                  //       );
+                  //       showDialog<String>(
+                  //         context: context,
+                  //         builder: (BuildContext context) => _editLesson
+                  //       ).then((val){
+                  //         setState(() {});
+                  //       });
+                  //     },
+                  //   )
+                  // );
                 }
               );
             } else {
@@ -65,7 +95,7 @@ class _ShowSheduleState extends State<ShowShedule> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: (){
+        onPressed: () async{
           DialogLesson _addLesson = DialogLesson(
             title: 'Добавить предмет',
             buttonTitle: 'Добавить',

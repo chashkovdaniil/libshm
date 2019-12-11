@@ -14,12 +14,6 @@ class EditHomeworkPageState extends State<EditHomeworkPage> {
     return FloatingActionButton(
       child: Icon(Icons.done),
       onPressed: (){
-        print('id = ${args.idShedule}');
-        args.homework.idShedule = args.idShedule;
-        args.homework.subject = args.idSubject;
-        args.homework.date = args.date;
-        
-        print(args.homework.toMap());
         DBProvider.db.homework(
           homework: args.homework);
         Navigator.pop(context);
@@ -91,11 +85,10 @@ class EditHomeworkPageState extends State<EditHomeworkPage> {
                     onChanged: (value){
                       setState(() {
                         args.homework.content = value;
-                        print(value);
                       });
                     },
                     maxLines: 20,
-                    initialValue: args.content,
+                    initialValue: args.homework.content,
                     decoration: InputDecoration(
                       labelText: "Задали: ",
                     ),

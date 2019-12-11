@@ -27,7 +27,7 @@ class DBProvider {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "DB.db");
 
-    await deleteDatabase(path);
+    // await deleteDatabase(path);
 
     return await openDatabase(path, version: 1, onOpen: (db) {}, 
       onCreate: (Database db, int version) async {
@@ -95,8 +95,16 @@ class DBProvider {
   }
   deleteShedule({int id, int weekday}) async {
     final db = await database;
+    var homeworks = await db.query('homeworks', where: "idShedule = ?", whereArgs: [id]);
+
+    if (homeworks.length > 0) {
+      homeworks.forEach((item){
+        db.delete("homeworks", where: "id = ?", whereArgs: [item['id']]);
+      });
+    }
+
     var raw = db.delete(weekdayString[weekday-1], where: "id = ?", whereArgs: [id]);
-    return raw;
+    return {'query': raw, 'done': 1};
   }
   Future<List<Shedule>> getMaxId({int weekday}) async {
     final db = await database;
@@ -105,18 +113,22 @@ class DBProvider {
     return list;
   }
   // Homeworks
-  Future<Map<String, dynamic>> getSSH({int weekday, int date}) async {
+  Future<Map<String, dynamic>> getSH({int weekday, int date}) async {
     final db = await database;
     var homeworks = await db.query("homeworks", where: 'date = ?', whereArgs: [date]);
-    var subjectsAndShedule = await DBProvider.db.getSheduleAndSubjects(weekday);
+    var shedule = await DBProvider.db.getShedule(weekday);
 
     List<Homework> listHomeworks = homeworks.isNotEmpty ? homeworks.map((data)=>Homework.fromMap(data)).toList() : [];
-    print(homeworks);
     return {
-      'subjects': subjectsAndShedule['subjects'],
-      'shedule': subjectsAndShedule['shedule'],
+      'shedule': shedule,
       'homeworks': listHomeworks
     };
+  }
+  Future<List<Homework>> getNotDoneHomeworks() async {
+    final db = await database;
+    var res = await db.query('homeworks', where: 'isDone = 0');
+    List<Homework> list = res.isNotEmpty ? res.map((data) => Homework.fromMap(data)).toList() : [];
+    return list;
   }
   Future<List<Homework>> getHomeWorks(int date) async {
     final db = await database;
@@ -131,7 +143,6 @@ class DBProvider {
     if (homework.id == null) {
       var idMax = await db.rawQuery("SELECT * FROM homeworks ORDER BY id DESC LIMIT 1");
       int id = 1;
-      print(idMax);
       if (idMax.length > 0) {
         id = idMax[0]['id']+1;
       }
@@ -142,11 +153,7 @@ class DBProvider {
         [id, homework.content, homework.idShedule, homework.subject, homework.date, homework.grade, homework.isDone]
       );
     }
-
-    // List homeworks = await db.query("homeworks", where: 'id = ?', whereArgs: [homework.id]);
     raw = await db.update('homeworks', homework.toMap(), where: 'id = ?', whereArgs: [homework.id]);
-
-    // print(homework.toMap());
     return raw;
   }
   // Subejcts
@@ -156,7 +163,7 @@ class DBProvider {
     List<Subject> list =  res.isNotEmpty ? res.map((data) => Subject.fromMap(data)).toList() : [];
     return list;
   }
-  getSubject(int id) async{
+  Future<List<Subject>> getSubject(int id) async{
     final db = await database;
     var res = await db.query("subjects", where: 'id = ?', whereArgs: [id]);
     List<Subject> list =  res.isNotEmpty ? res.map((data) => Subject.fromMap(data)).toList() : [];
@@ -164,18 +171,30 @@ class DBProvider {
   }
   addSubject(Subject subject) async{
     final db = await database;
-    if (subject.teacher == null) {
-      subject.teacher = "";
+    List isExist = await db.query('subjects', where: 'title = ?', whereArgs: [subject.title]);
+    var raw = {'done': 0, 'msg': 'Такой уже есть'};
+    if (isExist.length == 0) {
+      var query = db.rawInsert(
+        "INSERT Into subjects (title, teacher)"
+        " VALUES (?, ?)",
+        [subject.title, subject.teacher]
+      );
+      raw = {'done': 1, 'msg': 'Добавлено', 'query': query};
     }
-    var raw = db.rawInsert(
-      "INSERT Into subjects (title, teacher)"
-      " VALUES (?, ?)",
-      [subject.title, subject.teacher]
-    );
     return raw;
   }
   deleteSubject(int id) async{
     final db = await database;
+    var homeworks = await db.query('homeworks', where: "subject = ?", whereArgs: [id]);
+    List week = ['monday', 'tuesday', 'wednessday', 'thursday', 'friday', 'saturday', 'sunday'];
+    for(var i = 1; i < 8; i++){
+      var shedule = await db.query(week[i-1], where: "subject = ?", whereArgs: [id]);
+      if (shedule.length > 0) {
+        for(var k = 0; k < shedule.length; k++){
+          await DBProvider.db.deleteShedule(id: shedule[k]['id'], weekday: i);
+        }
+      }
+    }
     var raw = db.delete("subjects", where: "id = ?", whereArgs: [id]);
     return raw;
   }

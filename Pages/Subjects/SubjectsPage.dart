@@ -30,21 +30,18 @@ class _SubjectsPageState extends State<SubjectsPage> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index){
                   Subject item = snapshot.data[index];
-
                   String changedTitle = item.title;
                   String changedTeacher = item.teacher;
-
-                  print(item.title);
-                  print(item.teacher);
-                  return Dismissible(
-                    key: UniqueKey(),
-                    background: Container(color: Colors.red),
-                    onDismissed: (direction) {
-                      DBProvider.db.deleteSubject(item.id);
-                    },
-                    child: ListTile(
+                  return ListTile(
                       title: Text(item.title),
                       subtitle: Text(item.teacher),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () async {
+                          await DBProvider.db.deleteSubject(item.id);
+                          setState(() {});
+                        },
+                      ),
                       onTap: (){
                         showDialog<String>(
                           context: context,
@@ -97,7 +94,6 @@ class _SubjectsPageState extends State<SubjectsPage> {
                           }
                         });
                       }
-                    ),
                   );
                 },
               );
@@ -154,13 +150,13 @@ class _SubjectsPageState extends State<SubjectsPage> {
                 )
               ]
             )
-          ).then((data) {
+          ).then((data) async {
             if (title.isEmpty) { 
               Fluttertoast.showToast(msg: 'Укажите название!');
             } else {
-              Fluttertoast.showToast(msg: 'Добавлено!');
               Subject subject = Subject(title: title, teacher: teacher);
-              DBProvider.db.addSubject(subject);
+              var raw = await DBProvider.db.addSubject(subject);
+              Fluttertoast.showToast(msg: raw['msg'], textColor: Colors.black);
             }
           });
         },
