@@ -12,6 +12,43 @@ class _HomeworkPageState extends State<HomeworkPage> {
   DateTime _date;
   int _day;
   int _weekday;
+
+  Widget header(){
+    return Container(
+    constraints: BoxConstraints.expand(
+      width: double.infinity,
+      height: 80,
+    ),
+    color: Colors.white,
+    child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 20,horizontal: 30.0),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              flex: 11,
+              child: Text('расписание',
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30.0,
+                )
+              )
+            ),
+            Expanded(
+              flex: 1,
+              child: IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: (){
+                  Navigator.pushNamed(context, '/settings');
+                },
+              )
+            )
+          ],
+        )
+      )
+    );
+  }
+
   @override
   void initState() {
     _date = DateTime.now();
@@ -25,47 +62,40 @@ class _HomeworkPageState extends State<HomeworkPage> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(10.0), 
-        child: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0.0,
+        preferredSize: Size.fromHeight(100.0), 
+        child: Container(
+          color: Colors.white,
+          padding: EdgeInsets.all(20.0),
+          child: 
+            AppBar(
+              elevation: 0.0,
+              title: Text('расписание',
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30.0,
+                )
+              ),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.check_circle),
+                  onPressed: (){
+                    Navigator.pushNamed(context, '/notdone');
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: (){
+                    Navigator.pushNamed(context, '/settings');
+                  },
+                )
+              ],
+            ),
         )
       ),
       body: Column(
         children: <Widget>[
-          Container(
-            constraints: BoxConstraints.expand(
-              width: double.infinity,
-              height: 80,
-            ),
-            color: Colors.white,
-            child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20,horizontal: 30.0),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 11,
-                      child: Text('расписание',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30.0,
-                        )
-                      )
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: IconButton(
-                        icon: Icon(Icons.settings),
-                        onPressed: (){
-                          Navigator.pushNamed(context, '/settings');
-                        },
-                      )
-                    )
-                  ],
-                )
-              )
-            ),
+          // header(),
           Expanded(
             flex: 11,
             child: Container(color: Colors.white, child: FutureBuilder<Map<String, dynamic>>(
@@ -84,21 +114,40 @@ class _HomeworkPageState extends State<HomeworkPage> {
                       Shedule item = shedule[index];
 
                       homeworks.forEach((hm){
-                        if (hm.subject == subjects[item.subject-1]['id']) {
+                        if (hm.subject == subjects[item.subject-1]['id'] && hm.idShedule == item.id) {
                           currentHomework = hm;
                         }
                       });
-                      
+                      Widget isDone() {
+                        if (currentHomework.id != null ) {
+                          return Expanded(
+                            flex: 1,
+                            child: Align(
+                              alignment: Alignment.topCenter,
+                              child: Checkbox(
+                                activeColor: Colors.white,
+                                checkColor: Colors.black,
+                                value: currentHomework.isDone,
+                                onChanged: (val){
+                                  setState(() {
+                                    currentHomework.isDone = val;
+                                    DBProvider.db.homework(homework: currentHomework);
+                                  });
+                                },
+                              )
+                            )
+                          );
+                        }
+                        return Expanded(flex: 1, child: SizedBox());
+                      }
                       return InkWell(
                         onTap: () {
                           Navigator.pushNamed(context, '/homework', arguments: HomeworkPageArgs(
                             title: subjects[item.subject-1]['title'], 
-                            content: currentHomework.content,
                             homework: currentHomework,
-                            grade: currentHomework.grade,
                             idSubject: subjects[item.subject-1]['id'], 
+                            idShedule: item.id, 
                             date: int.parse('${_date.day}${_date.month}${_date.year}'),
-                            isDone: currentHomework.isDone
                           ));
                         },
                         child: Container(
@@ -143,12 +192,6 @@ class _HomeworkPageState extends State<HomeworkPage> {
                                   alignment: Alignment.topCenter,
                                   child: Column(
                                   children: <Widget>[
-                                    // Text('Оценка:', style: TextStyle(
-                                    //   color: Colors.white,
-                                    //   fontSize: 15.0,
-                                    //   fontWeight: FontWeight.w900
-                                    // )),
-                                    // SizedBox(height: 10.0),
                                     Text('${currentHomework.grade != null ? currentHomework.grade : ""}', style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 30.0,
@@ -158,23 +201,7 @@ class _HomeworkPageState extends State<HomeworkPage> {
                                 )
                                 )
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Checkbox(
-                                    activeColor: Colors.white,
-                                    checkColor: Colors.black,
-                                    value: currentHomework.isDone,
-                                    onChanged: (val){
-                                      setState(() {
-                                        currentHomework.isDone = val;
-                                        DBProvider.db.homework(homework: currentHomework);
-                                      });
-                                    },
-                                  )
-                                )
-                              )
+                              isDone()
                             ]
                           )
                         )

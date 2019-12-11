@@ -14,6 +14,8 @@ class EditHomeworkPageState extends State<EditHomeworkPage> {
     return FloatingActionButton(
       child: Icon(Icons.done),
       onPressed: (){
+        print('id = ${args.idShedule}');
+        args.homework.idShedule = args.idShedule;
         args.homework.subject = args.idSubject;
         args.homework.date = args.date;
         

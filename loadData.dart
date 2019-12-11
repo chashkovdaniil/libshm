@@ -59,6 +59,7 @@ class DBProvider {
         await db.execute("CREATE TABLE homeworks ("
             "id INTEGER PRIMARY KEY,"
             "date int,"
+            "idShedule int,"
             "subject int,"
             "content TEXT,"
             "files TEXT,"
@@ -110,6 +111,7 @@ class DBProvider {
     var subjectsAndShedule = await DBProvider.db.getSheduleAndSubjects(weekday);
 
     List<Homework> listHomeworks = homeworks.isNotEmpty ? homeworks.map((data)=>Homework.fromMap(data)).toList() : [];
+    print(homeworks);
     return {
       'subjects': subjectsAndShedule['subjects'],
       'shedule': subjectsAndShedule['shedule'],
@@ -127,10 +129,17 @@ class DBProvider {
     var raw;
 
     if (homework.id == null) {
+      var idMax = await db.rawQuery("SELECT * FROM homeworks ORDER BY id DESC LIMIT 1");
+      int id = 1;
+      print(idMax);
+      if (idMax.length > 0) {
+        id = idMax[0]['id']+1;
+      }
+
       return raw = db.rawInsert(
-        "INSERT Into homeworks (content, subject, date, grade, isDone)"
-        " VALUES (?, ?, ?, ?, ?)",
-        [homework.content, homework.subject, homework.date, homework.grade, homework.isDone]
+        "INSERT Into homeworks (id, content, idShedule, subject, date, grade, isDone)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [id, homework.content, homework.idShedule, homework.subject, homework.date, homework.grade, homework.isDone]
       );
     }
 

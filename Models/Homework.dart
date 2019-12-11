@@ -1,6 +1,7 @@
 
 class Homework {
   int id;
+  int idShedule;
   int subject;
   int grade;
   bool isDone;
@@ -8,11 +9,12 @@ class Homework {
   List files;
   int date;
 
-  Homework({this.id, this.date, this.subject, this.content, this.grade, this.isDone = false});
+  Homework({this.id, this.date, this.idShedule, this.subject, this.content, this.grade, this.isDone = false});
   
   factory Homework.fromMap(Map<String, dynamic> json) => new Homework(
     id: json['id'],
     date: json['date'],
+    idShedule: json['idShedule'],
     subject: json['subject'],
     content: json['content'],
     grade: json['grade'],
@@ -21,6 +23,7 @@ class Homework {
   );
   Map<String, dynamic> toMap() => {
     'id': id,
+    'idShedule': idShedule,
     'subject': subject,
     'content': content,
     'date': date,
