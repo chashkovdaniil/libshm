@@ -31,6 +31,7 @@ class DBProvider {
 
     return await openDatabase(path, version: 1, onOpen: (db) {}, 
       onCreate: (Database db, int version) async {
+        await db.execute("CREATE TABLE subjects (id INTEGER PRIMARY KEY, title TEXT, teacher TEXT)");
         await db.execute("CREATE TABLE monday ("
             "id INTEGER PRIMARY KEY,"
             "subject int)");
@@ -52,10 +53,6 @@ class DBProvider {
         await db.execute("CREATE TABLE sunday ("
             "id INTEGER PRIMARY KEY,"
             "subject int)");
-        await db.execute("CREATE TABLE subjects ("
-            "id INTEGER PRIMARY KEY,"
-            "title TEXT,"
-            "teacher TEXT)");
         await db.execute("CREATE TABLE homeworks ("
             "id INTEGER PRIMARY KEY,"
             "date int,"
@@ -67,30 +64,47 @@ class DBProvider {
             "isDone int DEFAULT 0)");
     });
   }
-  // Shedule
-  Future<List<Shedule>> getShedule(int weekday) async {
+  updateBase() async {
     final db = await database;
-    var res = await db.query(weekdayString[weekday-1]);
+  
+    db.rawQuery("CREATE TABLE IF NOT EXISTS shedule (id INTEGER PRIMARY KEY, weekday int, week int, subject int)");
+
+    for (var i = 0; i < weekdayString.length; i++) {
+      var res = await db.query(weekdayString[i]);
+
+      List<Shedule> list = res.isNotEmpty ? res.map( (data) => Shedule.fromMap(data) ).toList() : [];
+
+      list.forEach( (item) {
+        db.rawInsert('INSERT INTO shedule (weekday, week, subject) VALUES (?, ?, ?)', [i, 1, item.subject]);
+      });
+
+      db.rawQuery("DROP TABLE ${weekdayString[i]}");
+    }
+  }
+  // Shedule
+  Future<List<Shedule>> getShedule({int weekday, int week = 1}) async {
+    final db = await database;
+    var res = await db.query('shedule', where: 'weekday = ? AND week = ?', whereArgs: [weekday-1, week]);
     List<Shedule> list =  res.isNotEmpty ? res.map((data) => Shedule.fromMap(data)).toList() : [];
     return list;
   }
 
-  Future<Map<String, dynamic>> getSheduleAndSubjects(int weekday) async {
+  Future<Map<String, dynamic>> getSheduleAndSubjects({int weekday, int week = 1}) async {
     final db = await database;
-    var res = await db.query(weekdayString[weekday-1]);
+    var res = await db.query('shedule', where: 'weekday = ? AND week', whereArgs: [weekday-1, week]);
     var subjects = await db.query("subjects");
     List<Shedule> list =  res.isNotEmpty ? res.map((data) => Shedule.fromMap(data)).toList() : [];
     return {'shedule': list, 'subjects': subjects};
   }
 
-  addShedule({int weekday, Shedule shedule}) async {
+  addShedule({int weekday, int week = 1, Shedule shedule}) async {
     final db = await database;
-    var raw = db.rawInsert("INSERT Into ${weekdayString[weekday-1]} (subject) VALUES (?)", [shedule.subject]);
+    var raw = db.rawInsert("INSERT INTO shedule (weekday, week, subject) VALUES (?, ?, ?)", [weekday-1, week, shedule.subject]);
     return raw;
   }
   updateShedule({int weekday, Shedule shedule}) async {
     final db = await database;
-    var raw = await db.update(weekdayString[weekday-1], shedule.toMap(), where: 'id = ?', whereArgs: [shedule.id]);
+    var raw = await db.update('shedule', shedule.toMap(), where: 'id = ?', whereArgs: [shedule.id]);
     return raw;
   }
   deleteShedule({int id, int weekday}) async {
@@ -103,12 +117,12 @@ class DBProvider {
       });
     }
 
-    var raw = db.delete(weekdayString[weekday-1], where: "id = ?", whereArgs: [id]);
+    var raw = db.delete('shedule', where: "id = ?", whereArgs: [id]);
     return {'query': raw, 'done': 1};
   }
-  Future<List<Shedule>> getMaxId({int weekday}) async {
+  Future<List<Shedule>> getMaxId({int weekday, int week = 1}) async {
     final db = await database;
-    var res = await db.rawQuery('SELECT * FROM ${weekdayString[weekday-1]} ORDER BY id DESC LIMIT 1');
+    var res = await db.rawQuery('SELECT * FROM shedule WHERE weekday = ${weekday-1} AND week = $week ORDER BY id DESC LIMIT 1');
     List<Shedule> list =  res.isNotEmpty ? res.map((data) => Shedule.fromMap(data)).toList() : [];
     return list;
   }
@@ -116,7 +130,7 @@ class DBProvider {
   Future<Map<String, dynamic>> getSH({int weekday, int date}) async {
     final db = await database;
     var homeworks = await db.query("homeworks", where: 'date = ?', whereArgs: [date]);
-    var shedule = await DBProvider.db.getShedule(weekday);
+    var shedule = await DBProvider.db.getShedule(weekday: weekday);
 
     List<Homework> listHomeworks = homeworks.isNotEmpty ? homeworks.map((data)=>Homework.fromMap(data)).toList() : [];
     return {
@@ -126,7 +140,7 @@ class DBProvider {
   }
   Future<List<Homework>> getNotDoneHomeworks() async {
     final db = await database;
-    var res = await db.query('homeworks', where: 'isDone = 0');
+    var res = await db.query('homeworks', where: 'isDone = 0 AND content != ""');
     List<Homework> list = res.isNotEmpty ? res.map((data) => Homework.fromMap(data)).toList() : [];
     return list;
   }
@@ -185,14 +199,11 @@ class DBProvider {
   }
   deleteSubject(int id) async{
     final db = await database;
-    var homeworks = await db.query('homeworks', where: "subject = ?", whereArgs: [id]);
-    List week = ['monday', 'tuesday', 'wednessday', 'thursday', 'friday', 'saturday', 'sunday'];
-    for(var i = 1; i < 8; i++){
-      var shedule = await db.query(week[i-1], where: "subject = ?", whereArgs: [id]);
-      if (shedule.length > 0) {
-        for(var k = 0; k < shedule.length; k++){
-          await DBProvider.db.deleteShedule(id: shedule[k]['id'], weekday: i);
-        }
+    
+    var shedule = await db.query('shedule', where: "subject = ?", whereArgs: [id]);
+    if (shedule.length > 0) {
+      for(var k = 0; k < shedule.length; k++){
+        await DBProvider.db.deleteShedule(id: shedule[k]['id']);
       }
     }
     var raw = db.delete("subjects", where: "id = ?", whereArgs: [id]);
@@ -202,5 +213,12 @@ class DBProvider {
     final db = await database;
     var raw = await db.update("subjects", subject.toMap(), where: 'id = ?', whereArgs: [subject.id]);
     return raw;
+  }
+
+  Future<List<Homework>> getGrades(int subject) async {
+    final db = await database;
+    var res = await db.query('homeworks', where: 'subject = ?', whereArgs: [subject]);
+    List<Homework> list = res.isNotEmpty ? res.map( (data) => Homework.fromMap(data) ).toList() : [];
+    return list;
   }
 }

@@ -18,7 +18,7 @@ class _ShowSheduleState extends State<ShowShedule> {
       body: Container(
         color: Colors.white,
         child: FutureBuilder<List<Shedule>>(
-          future: DBProvider.db.getShedule(widget._weekday),
+          future: DBProvider.db.getShedule(weekday: widget._weekday),
           builder: (BuildContext context, AsyncSnapshot<List<Shedule>> snapshot) {
             if (snapshot.hasData && (snapshot.data.length > 0)) {
               List shedule = snapshot.data;
@@ -32,6 +32,15 @@ class _ShowSheduleState extends State<ShowShedule> {
                       if(snapshotSubject.hasData){
                         Subject subject = snapshotSubject.data[0];
                         return ListTile(
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () async {
+                              var raw = await DBProvider.db.deleteShedule(id: item.id, weekday: widget._weekday);
+                              if (raw['done'] == 1){
+                                setState(() {});
+                              }
+                            }
+                          ),
                           title: Text("${subject == null ? "" : subject.title}", style: TextStyle(fontSize: 20.0),),
                           onTap: (){
                             DialogLesson _editLesson = DialogLesson(

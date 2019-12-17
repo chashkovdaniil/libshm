@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
   final List<Map> list = <Map>[
+    {'title': 'Все оценки', 'icon': Icon(Icons.grade), 'url': '/grades'},
     {'title': 'Расписание', 'icon': Icon(Icons.list), 'url': '/editShedule'},
     {'title': 'Предметы', 'icon': Icon(Icons.filter_list), 'url': '/subjects'},
     {'title': 'О приложении', 'icon': Icon(Icons.info), 'url': '/about'}

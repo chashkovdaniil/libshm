@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:schooldiary/Models/Homework.dart';
 import 'package:schooldiary/Models/Shedule.dart';
 import 'package:schooldiary/Models/Subject.dart';
+import 'package:schooldiary/Modules/AppBar.dart';
 import 'package:schooldiary/Pages/Homework/HomeworkPageArgs.dart';
 import 'package:schooldiary/loadData.dart';
 
@@ -11,43 +12,7 @@ class HomeworkPage extends StatefulWidget {
 }
 class _HomeworkPageState extends State<HomeworkPage> {
   DateTime _date;
-  int _day;
-  int _weekday;
-
-  Widget appBar() {
-    return PreferredSize(
-      preferredSize: Size.fromHeight(100.0), 
-      child: Container(
-        color: Colors.white,
-        padding: EdgeInsets.all(20.0),
-        child: AppBar(
-          elevation: 0.0,
-          title: Text('расписание',
-            style: TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.bold,
-              fontSize: 30.0,
-            )
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.check_circle),
-              onPressed: (){
-                Navigator.pushNamed(context, '/notdone');
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: (){
-                Navigator.pushNamed(context, '/settings');
-              },
-            )
-          ],
-        ),
-      )
-    );
-  }
-
+  
   Widget widgetHomework({homeworks, homework, shedule, index}) {
     return FutureBuilder<List<Subject>>(
       future: DBProvider.db.getSubject(shedule.subject),
@@ -60,7 +25,7 @@ class _HomeworkPageState extends State<HomeworkPage> {
             }
           });
           Widget isDone() {
-            if (homework.id != null ) {
+            if (homework.id != null && homework.content != "" && homework.content != null) {
               return Expanded(
                 flex: 1,
                 child: Align(
@@ -157,8 +122,6 @@ class _HomeworkPageState extends State<HomeworkPage> {
   @override
   void initState() {
     _date = DateTime.now();
-    _day = _date.day;
-    _weekday = _date.weekday;
     super.initState();
   }
   @override
@@ -166,7 +129,11 @@ class _HomeworkPageState extends State<HomeworkPage> {
     List _dayString = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
     return Scaffold(
-      appBar: appBar(),
+      appBar: CustomAppBar(title: 'Расписание', actions: [
+        {'icon':Icon(Icons.attach_money), 'link': '/donation'},
+        {'icon':Icon(Icons.check_circle), 'link': '/notdone'},
+        {'icon':Icon(Icons.settings), 'link': '/settings'}
+      ]),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -186,11 +153,9 @@ class _HomeworkPageState extends State<HomeworkPage> {
                       Shedule item = shedule[index];
                       
                       return widgetHomework(index: index, homeworks: homeworks, homework: currentHomework, shedule: item);
-                    }
-                  );
-                } else {
-                  return Center(child: CircularProgressIndicator());
+                  });
                 }
+                return Center(child: Text('Заполните расписание'));
               },
             ))
           ),
@@ -204,15 +169,13 @@ class _HomeworkPageState extends State<HomeworkPage> {
                   child: FlatButton(child: Icon(Icons.arrow_back), onPressed: (){
                     setState(() {
                       _date = _date.subtract(Duration(days: 1));
-                      _day = _date.day;
-                      _weekday = _date.weekday;
                     });
                   }),
                 ),
                 SizedBox(width: 10.0),
                 Expanded(
                   flex: 5,
-                  child: Center(child:Text('${_dayString[_weekday-1]} ($_day)', style: TextStyle(fontSize: 20.0))),
+                  child: Center(child:Text('${_dayString[_date.weekday-1]} (${_date.day})', style: TextStyle(fontSize: 20.0))),
                 ),
                 SizedBox(width: 10.0),
                 Expanded(
@@ -220,8 +183,6 @@ class _HomeworkPageState extends State<HomeworkPage> {
                   child: FlatButton(child: Icon(Icons.arrow_forward), onPressed: (){
                     setState(() {
                       _date = _date.add(Duration(days: 1));
-                      _day = _date.day;
-                      _weekday = _date.weekday;
                     });
                   })
                 )

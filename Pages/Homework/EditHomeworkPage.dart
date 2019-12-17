@@ -85,6 +85,7 @@ class EditHomeworkPageState extends State<EditHomeworkPage> {
                     onChanged: (value){
                       setState(() {
                         args.homework.content = value;
+                        if(value == "" ) args.homework.content = null;
                       });
                     },
                     maxLines: 20,

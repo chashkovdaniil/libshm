@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:schooldiary/Models/Homework.dart';
 import 'package:schooldiary/Models/Subject.dart';
+import 'package:schooldiary/Modules/AppBar.dart';
 import 'package:schooldiary/Pages/Homework/HomeworkPageArgs.dart';
 import 'package:schooldiary/loadData.dart';
 
@@ -99,38 +100,10 @@ class _NotDonePageState extends State<NotDonePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100.0), 
-        child: Container(
-          color: Colors.white,
-          padding: EdgeInsets.all(20.0),
-          child: 
-            AppBar(
-              elevation: 0.0,
-              title: Text('Не сделано',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30.0,
-                )
-              ),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.home),
-                  onPressed: (){
-                    Navigator.pop(context);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.settings),
-                  onPressed: (){
-                    Navigator.pushNamed(context, '/settings');
-                  },
-                )
-              ],
-            ),
-        )
-      ),
+      appBar: CustomAppBar(title: 'Не сделано', actions: [
+        {'icon':Icon(Icons.attach_money), 'link': '/donation'},
+        {'icon':Icon(Icons.settings), 'link': '/settings'}
+      ]),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -155,40 +128,6 @@ class _NotDonePageState extends State<NotDonePage> {
               },
             ))
           ),
-          // Expanded(
-          //   flex: 1,
-          //   child: Container(
-          //     color: Colors.white,
-          //     child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[
-          //       Expanded(
-          //         flex: 2,
-          //         child: FlatButton(child: Icon(Icons.arrow_back), onPressed: (){
-          //           setState(() {
-          //             _date = _date.subtract(Duration(days: 1));
-          //             _day = _date.day;
-          //             _weekday = _date.weekday;
-          //           });
-          //         }),
-          //       ),
-          //       SizedBox(width: 10.0),
-          //       Expanded(
-          //         flex: 5,
-          //         child: Center(child:Text('${_dayString[_weekday-1]} ($_day)', style: TextStyle(fontSize: 20.0))),
-          //       ),
-          //       SizedBox(width: 10.0),
-          //       Expanded(
-          //         flex: 2,
-          //         child: FlatButton(child: Icon(Icons.arrow_forward), onPressed: (){
-          //           setState(() {
-          //             _date = _date.add(Duration(days: 1));
-          //             _day = _date.day;
-          //             _weekday = _date.weekday;
-          //           });
-          //         })
-          //       )
-          //     ],)
-          //   )
-          // )
         ],
       )
     );

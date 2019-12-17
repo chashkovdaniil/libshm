@@ -43,7 +43,7 @@ class _DialogLessonState extends State<DialogLesson>{
               future: _subjects,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (widget.subject != null){
+                  if (widget.subject != null && selectedSubject == null){
                     for (var i = 0; i < snapshot.data.length; i++){
                       if(snapshot.data[i].id == widget.subject.id){
                         selectedSubject = snapshot.data[i];
