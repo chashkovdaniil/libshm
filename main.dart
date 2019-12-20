@@ -11,6 +11,8 @@ import 'package:schooldiary/Pages/Subjects/SubjectsPage.dart';
 import 'package:schooldiary/Pages/Settings/SettingsPage.dart';
 import 'package:schooldiary/Pages/Update/UpdatePage.dart';
 
+
+
 bool auth = true;
 
 void main() => runApp(MyApp());

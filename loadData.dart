@@ -32,27 +32,6 @@ class DBProvider {
     return await openDatabase(path, version: 1, onOpen: (db) {}, 
       onCreate: (Database db, int version) async {
         await db.execute("CREATE TABLE subjects (id INTEGER PRIMARY KEY, title TEXT, teacher TEXT)");
-        await db.execute("CREATE TABLE monday ("
-            "id INTEGER PRIMARY KEY,"
-            "subject int)");
-        await db.execute("CREATE TABLE tuesday ("
-            "id INTEGER PRIMARY KEY,"
-            "subject int)");
-        await db.execute("CREATE TABLE wednessday ("
-            "id INTEGER PRIMARY KEY,"
-            "subject int)");
-        await db.execute("CREATE TABLE thursday ("
-            "id INTEGER PRIMARY KEY,"
-            "subject int)");
-        await db.execute("CREATE TABLE friday ("
-            "id INTEGER PRIMARY KEY,"
-            "subject int)");
-        await db.execute("CREATE TABLE saturday ("
-            "id INTEGER PRIMARY KEY,"
-            "subject int)");
-        await db.execute("CREATE TABLE sunday ("
-            "id INTEGER PRIMARY KEY,"
-            "subject int)");
         await db.execute("CREATE TABLE homeworks ("
             "id INTEGER PRIMARY KEY,"
             "date int,"
@@ -62,26 +41,17 @@ class DBProvider {
             "files TEXT,"
             "grade int,"
             "isDone int DEFAULT 0)");
+        await db.execute('CREATE TABLE IF NOT EXISTS shedule (id INTEGER PRIMARY KEY, weekday int, week int, subject int)');
     });
   }
   updateBase() async {
-    final db = await database;
-  
-    db.rawQuery("CREATE TABLE IF NOT EXISTS shedule (id INTEGER PRIMARY KEY, weekday int, week int, subject int)");
-
-    for (var i = 0; i < weekdayString.length; i++) {
-      var res = await db.query(weekdayString[i]);
-
-      List<Shedule> list = res.isNotEmpty ? res.map( (data) => Shedule.fromMap(data) ).toList() : [];
-
-      list.forEach( (item) {
-        db.rawInsert('INSERT INTO shedule (weekday, week, subject) VALUES (?, ?, ?)', [i, 1, item.subject]);
-      });
-
-      db.rawQuery("DROP TABLE ${weekdayString[i]}");
-    }
+    /// final db = await database;
+    ///
   }
+
+
   // Shedule
+
   Future<List<Shedule>> getShedule({int weekday, int week = 1}) async {
     final db = await database;
     var res = await db.query('shedule', where: 'weekday = ? AND week = ?', whereArgs: [weekday-1, week]);
@@ -126,7 +96,9 @@ class DBProvider {
     List<Shedule> list =  res.isNotEmpty ? res.map((data) => Shedule.fromMap(data)).toList() : [];
     return list;
   }
-  // Homeworks
+
+  // ----------------------- Homeworks
+
   Future<Map<String, dynamic>> getSH({int weekday, int date}) async {
     final db = await database;
     var homeworks = await db.query("homeworks", where: 'date = ?', whereArgs: [date]);
@@ -170,7 +142,9 @@ class DBProvider {
     raw = await db.update('homeworks', homework.toMap(), where: 'id = ?', whereArgs: [homework.id]);
     return raw;
   }
-  // Subejcts
+
+  // ----------------------- Subejcts
+
   Future<List<Subject>> getSubjects() async {
     final db = await database;
     var res = await db.query("subjects");
